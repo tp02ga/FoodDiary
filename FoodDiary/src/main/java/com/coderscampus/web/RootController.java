@@ -1,5 +1,7 @@
 package com.coderscampus.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,15 +26,72 @@ public class RootController
     model.put("foodDiary", new FoodDiary());
     return "foodDiary";
   }
+  
+  @RequestMapping(value="/food-diaries/mealType/{mealType}", method=RequestMethod.GET)
+  public String findByMealTypes (@PathVariable String mealType, ModelMap model)
+  {
+    List<FoodDiary> findByMealType = foodDiaryRepository.findByMealType(mealType);
+    
+    model.put("foodDiaries", findByMealType);
+    
+    return "foodDiary";
+  }
+  
+  @RequestMapping(value="/food-diaries/cost-less-than/{cost}", method=RequestMethod.GET)
+  public String findByCostLessThan (@PathVariable Double cost, ModelMap model)
+  {
+    List<FoodDiary> findByMealType = foodDiaryRepository.findByCostLessThan(cost);
+    
+    model.put("foodDiaries", findByMealType);
+    
+    return "foodDiary";
+  }
+  
+  @RequestMapping(value="/food-diaries/cost-greater-than/{cost}", method=RequestMethod.GET)
+  public String findByCostGreaterThan (@PathVariable Double cost, ModelMap model)
+  {
+    List<FoodDiary> findByMealType = foodDiaryRepository.findByCostGreaterThan(cost);
+    
+    model.put("foodDiaries", findByMealType);
+    
+    return "foodDiary";
+  }
+  
+  @RequestMapping(value="/food-diaries/search/{food}-{mealType}", method=RequestMethod.GET)
+  public String findByFoodAndMealType (@PathVariable String food, @PathVariable String mealType, ModelMap model)
+  {
+    List<FoodDiary> findByMealType = foodDiaryRepository.findByFoodAndMealType(food, mealType);
+    
+    model.put("foodDiaries", findByMealType);
+    
+    return "foodDiary";
+  }
+  
+  @RequestMapping(value="/food-diaries/cost-between/{minCost}-{maxCost}", method=RequestMethod.GET)
+  public String findByCostBetween(@PathVariable Double minCost, @PathVariable Double maxCost, ModelMap model)
+  {
+    List<FoodDiary> findByMealType = foodDiaryRepository.findByCostBetween(minCost, maxCost);
+    
+    model.put("foodDiaries", findByMealType);
+    
+    return "foodDiary";
+  }
 
   @RequestMapping(value="", method=RequestMethod.POST)
   public String rootMappingPost(@ModelAttribute FoodDiary foodDiary, ModelMap model)
   {
     foodDiaryRepository.save(foodDiary);
     
-    model.put("foodDiary", new FoodDiary());
-
     return "redirect:/";
+  }
+  
+  @RequestMapping(value="food-diaries/{foodDiaryId}", method=RequestMethod.POST)
+  public String updateFoodDiaryEntry(@ModelAttribute FoodDiary foodDiary, @PathVariable Long foodDiaryId, ModelMap model)
+  {
+    foodDiary.setId(foodDiaryId);
+    foodDiaryRepository.save(foodDiary);
+    
+    return "redirect:/food-diaries/" + foodDiary.getId();
   }
   
   @RequestMapping(value="food-diaries/{foodDiaryId}", method=RequestMethod.GET)
